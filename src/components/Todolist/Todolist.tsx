@@ -50,7 +50,7 @@ const Todolist: React.FC<TodolistPropsType> = (props) => {
   const addNewTask = (newTask: string) => {
     const createdTask = [
       ...tasksArr,
-      { title: newTask, task_id: v1(), isDone: false },
+      { title: newTask, task_id: v1(), isDone: false, img: null },
     ];
     // @ts-ignore
     changeTodolist(todo_id, { tasks: JSON.stringify(createdTask) });
@@ -83,8 +83,9 @@ const Todolist: React.FC<TodolistPropsType> = (props) => {
   };
 
   const changeTitle = (newTitle: any) => {
-    changeTodolist(todo_id, newTitle);
+    changeTodolist(todo_id, { title: newTitle });
   };
+
   return (
     <div>
       <h3>
@@ -96,6 +97,37 @@ const Todolist: React.FC<TodolistPropsType> = (props) => {
       <AddItemForm addItem={addNewTask} />
       <div>
         {renderTasks.map((t) => {
+          let tag;
+          if (t.img !== null) {
+            tag = (
+              <>
+                <br />
+                <img
+                  src={t.img}
+                  alt="img"
+                  style={{ width: "100%", maxWidth: "270px" }}
+                />
+                <br />
+                <hr />
+              </>
+            );
+          } else if (t.isDone === false) {
+            tag = (
+              <>
+                <br />
+                <UploadImg
+                  todo_id={todo_id}
+                  changeTodolist={changeTodolist}
+                  tasks={renderTasks}
+                  task_id={t.task_id}
+                />
+                <br />
+                <hr />
+              </>
+            );
+          } else {
+            tag = <></>;
+          }
           return (
             <div key={t.task_id} className={t.isDone ? `${s.isDone}` : ""}>
               <Checkbox
@@ -110,7 +142,7 @@ const Todolist: React.FC<TodolistPropsType> = (props) => {
               >
                 <Delete fontSize="small" style={{ color: green[500] }} />
               </IconButton>
-              {t.isDone === false ? <UploadImg /> : <></>}
+              {tag}
             </div>
           );
         })}
